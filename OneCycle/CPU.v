@@ -1,0 +1,77 @@
+module CPU(clk,reset,digi_out1,digi_out2,digi_out3,digi_out4,led,switch,rx,tx);
+input clk,reset,rx;
+output digi_out1,digi_out2,digi_out3,digi_out4,led,switch,tx;
+//Signals
+wire [2:0] PCSrc;
+wire [1:0] RegDst;
+wire [1:0] MemToReg;
+wire [5:0] ALUFun;
+wire RegWr,ALUSrc1,ALUSrc2,Sign,MemWr,MemRd,EXTOp,LUOp;
+//wires
+wire [31:0] Instruct;
+wire [25:0] JT;
+wire [15:0] Imm16;
+wire [4:0] Shamt;
+wire [4:0] Rd;
+wire [4:0] Rt;
+wire [4:0] Rs;
+wire [31:0] ConBA;
+wire [31:0] DataBusA;
+wire [31:0] DataBusB;
+wire [31:0] DataBusC;
+wire [31:0] ALUOut;
+wire IRQ;
+//PC
+reg [31:0] PC;
+wire [31:0] PCp4;
+assign PCp4=PC+4;
+always @(posedge clk or negedge reset)
+begin
+	if(~reset)
+		PC<=32'd0;
+	else 
+		PC<=(PCSrc==3'd0)?PCp4:
+			(PCSrc==3'd1)?ALUOut[0]?ConBA:PCp4:
+			(PCSrc==3'd2)?JT:
+			(PCSrc==3'd3)?DataBusA:
+			(PCSrc==3'd4)?32'h80000004:
+			(PCSrc==3'd5)?32'h80000008:PCp4;
+end
+//Instruction Mem
+ROM rom(PC,Instruct);
+assign JT=Instruct[25:0];
+assign Imm16=Instruct[15:0];
+assign Shamt=Instruct[10:6];
+assign Rd=Instruct[15:11];
+assign Rt=Instruct[20:16];
+assign Rs=Instruct[25:21];
+//Control
+Control ctrl(Instruct,IRQ,PCSrc,RegDst,RegWr,ALUSrc1,ALUSrc2,ALUFun,Sign,MemWr,MemRd,MemToReg,EXTOp,LUOp);
+//RegFile
+wire AddrC;
+assign AddrC=(RegDst==2'd0)?Rd:
+			(RegDst==2'd0)?Rt:
+			(RegDst==2'd0)?5'd31:5'd26;
+RegFile regfile(reset,clk,Rs,DataBusA,Rt,DataBusB,RegWr,AddrC,DataBusC);
+//ALU & Branches
+wire [31:0] ExtImm;
+wire [31:0] ALUInA;
+wire [31:0] ALUInB;
+assign ExtImm=EXTOp?{{16{Imm16[15]}},Imm16}:{16'd0,Imm16};
+assign ALUInA=ALUSrc1?Shamt:DataBusA;
+assign ALUInB=ALUSrc2?(LUOp?{Imm16,16'd0}:ExtImm):DataBusA;
+assign ConBA=(ExtImm<<2)+PCp4;
+ALU(ALUInA,ALUInB,ALUFun,Sign,ALUOut);
+//DataMem & Peripheral
+wire [31:0] rdatam;
+wire [31:0] rdatap;
+wire [31:0] rdata
+wire [11:0] digi;
+DataMem datamem(reset,clk,MemRd&(~DataBusB[30]),MemWr&(~DataBusB[30]),DataBus,ALUOut,rdatam);
+Peripheral periphrral(reset,clk,MemRd&DataBusB[30],MemWr&DataBusB[30],DataBus,ALUOut,rdatap,led,switch,digi,rx,tx,IRQ);
+digitube_scan digi_scan(digi,digi_out1,digi_out2,digi_out3,digi_out4);
+assign rdata=DataBusB[30]?rdatap:rdatam;
+assign DataBusC=(MemToReg==2'd0)?ALUOut:
+				(MemToReg==2'd1)?rdata:
+				(MemToReg==2'd0)?PCp4:32'd0;
+endmodule
