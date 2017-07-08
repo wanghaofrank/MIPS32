@@ -32,7 +32,7 @@ begin
 	else 
 		PC<=(PCSrc==3'd0)?PCp4:
 			(PCSrc==3'd1)?ALUOut[0]?ConBA:PCp4:
-			(PCSrc==3'd2)?JT:
+			(PCSrc==3'd2)?{PCp4[31:28],JT,2'd0}:
 			(PCSrc==3'd3)?DataBusA:
 			(PCSrc==3'd4)?32'h80000004:
 			(PCSrc==3'd5)?32'h80000008:PCp4;
@@ -46,7 +46,7 @@ assign Rd=Instruct[15:11];
 assign Rt=Instruct[20:16];
 assign Rs=Instruct[25:21];
 //Control
-Control ctrl(Instruct,IRQ,PCSrc,RegDst,RegWr,ALUSrc1,ALUSrc2,ALUFun,Sign,MemWr,MemRd,MemToReg,EXTOp,LUOp);
+Control ctrl(Instruct[31:26],Instruct[5:0],IRQ,PCSrc,RegDst,RegWr,ALUSrc1,ALUSrc2,ALUFun,Sign,MemWr,MemRd,MemToReg,EXTOp,LUOp);
 //RegFile
 wire AddrC;
 assign AddrC=(RegDst==2'd0)?Rd:
