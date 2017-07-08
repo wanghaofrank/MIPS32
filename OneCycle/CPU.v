@@ -6,7 +6,7 @@ wire [2:0] PCSrc;
 wire [1:0] RegDst;
 wire [1:0] MemToReg;
 wire [5:0] ALUFun;
-wire RegWr,ALUSrc1,ALUSrc2,Sign,MemWr,MemRd,EXTOp,LUOp;
+wire RegWr,ALUSrc1,ALUSrc2,Sign,MemWr,MemRd,EXTOp;
 //wires
 wire [31:0] Instruct;
 wire [25:0] JT;
@@ -46,7 +46,7 @@ assign Rd=Instruct[15:11];
 assign Rt=Instruct[20:16];
 assign Rs=Instruct[25:21];
 //Control
-Control ctrl(Instruct[31:26],Instruct[5:0],IRQ,PCSrc,RegDst,RegWr,ALUSrc1,ALUSrc2,ALUFun,Sign,MemWr,MemRd,MemToReg,EXTOp,LUOp);
+Control ctrl(Instruct[31:26],Instruct[5:0],IRQ,PCSrc,RegDst,RegWr,ALUSrc1,ALUSrc2,ALUFun,Sign,MemWr,MemRd,MemToReg,EXTOp);
 //RegFile
 wire AddrC;
 assign AddrC=(RegDst==2'd0)?Rd:
@@ -59,7 +59,7 @@ wire [31:0] ALUInA;
 wire [31:0] ALUInB;
 assign ExtImm=EXTOp?{{16{Imm16[15]}},Imm16}:{16'd0,Imm16};
 assign ALUInA=ALUSrc1?{27'd0,Shamt}:DataBusA;
-assign ALUInB=ALUSrc2?(LUOp?{Imm16,16'd0}:ExtImm):DataBusA;
+assign ALUInB=ALUSrc2?ExtImm:DataBusA;
 assign ConBA=(ExtImm<<2)+PCp4;
 ALU(ALUInA,ALUInB,ALUFun,Sign,ALUOut);
 //DataMem & Peripheral
@@ -73,5 +73,5 @@ digitube_scan digi_scan(digi,digi_out1,digi_out2,digi_out3,digi_out4);
 assign rdata=DataBusB[30]?rdatap:rdatam;
 assign DataBusC=(MemToReg==2'd0)?ALUOut:
 				(MemToReg==2'd1)?rdata:
-				(MemToReg==2'd0)?PCp4:32'd0;
+				(MemToReg==2'd0)?PCp4:{Imm16,16'd0};
 endmodule
