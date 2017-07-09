@@ -78,7 +78,7 @@ wire [11:0] digi;
 DataMem datamem(reset,clk,MemRd&(~ALUOut[30]),MemWr&(~ALUOut[30]),ALUOut,DataBusB,rdatam);
 Peripheral periphrral(reset,clk,MemRd&ALUOut[30],MemWr&ALUOut[30],ALUOut,DataBusB,rdatap,led,switch,digi,IRQ,tx,rx);
 digitube_scan digi_scan(digi,digi_out1,digi_out2,digi_out3,digi_out4);
-assign rdata=DataBusB[30]?rdatap:rdatam;
+assign rdata=ALUOut[30]?rdatap:rdatam;
 assign DataBusC=(MemToReg==2'd0)?ALUOut:
 				(MemToReg==2'd1)?rdata:
 				(MemToReg==2'd2)?PCp4:{Imm16,16'd0};
