@@ -21,7 +21,7 @@ end
 
 BaudRateGenerator BaudRateGenerator0(sysclk,reset,baudclk,baudsendclk);
 UARTReceiver UARTReceiver0(UART_RX,sysclk,reset,baudclk,RX_DATA,RX_STATUS);
-UARTSender UARTSender0(sysclk,reset,baudclk,TX_DATA,TX_EN,TX_STATUS,UART_TX);
+UARTSender UARTSender0(sysclk,reset,baudsendclk,TX_DATA,TX_EN,TX_STATUS,UART_TX);
 endmodule
 
 
