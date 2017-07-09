@@ -1,6 +1,6 @@
-module UART(sysclk,reset,TX_STATUS,RX_STATUS,TX_DATA,RX_DATA,UART_TX,UART_RX,TX_SEND);
+module UART(clk_50M,sysclk,reset,TX_STATUS,RX_STATUS,TX_DATA,RX_DATA,UART_TX,UART_RX,TX_SEND);
 
-input sysclk,reset,UART_RX,TX_SEND;
+input clk_50M,sysclk,reset,UART_RX,TX_SEND;
 input [7:0] TX_DATA;
 output TX_STATUS,RX_STATUS,UART_TX;
 output [7:0] RX_DATA;
@@ -19,7 +19,7 @@ always @(posedge sysclk or negedge reset) begin
 end
 
 
-BaudRateGenerator BaudRateGenerator0(sysclk,reset,baudclk,baudsendclk);
+BaudRateGenerator BaudRateGenerator0(clk_50M,reset,baudclk,baudsendclk);
 UARTReceiver UARTReceiver0(UART_RX,sysclk,reset,baudclk,RX_DATA,RX_STATUS);
 UARTSender UARTSender0(sysclk,reset,baudsendclk,TX_DATA,TX_EN,TX_STATUS,UART_TX);
 endmodule

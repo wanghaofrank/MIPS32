@@ -1,5 +1,5 @@
-module CPU(clk,reset,digi_out1,digi_out2,digi_out3,digi_out4,led,switch,rx,tx);
-input clk,reset,rx;
+module CPU(sysclk,reset,digi_out1,digi_out2,digi_out3,digi_out4,led,switch,rx,tx);
+input sysclk,reset,rx;
 output [6:0] digi_out1;
 output [6:0] digi_out2;
 output [6:0] digi_out3;
@@ -7,6 +7,8 @@ output [6:0] digi_out4;
 output [7:0] led;
 input [7:0] switch;
 output tx;
+// dive clk
+wire clk;
 //Signals
 wire [2:0] PCSrc;
 wire [1:0] RegDst;
@@ -30,6 +32,9 @@ wire IRQ;
 //PC
 reg [31:0] PC;
 wire [31:0] PCp4;
+
+divclk divclk0(sysclk,clk,reset);
+
 assign PCp4=PC+32'd4;
 always @(posedge clk or negedge reset)
 begin
@@ -76,7 +81,7 @@ wire [31:0] rdatap;
 wire [31:0] rdata;
 wire [11:0] digi;
 DataMem datamem(reset,clk,MemRd&(~ALUOut[30]),MemWr&(~ALUOut[30]),ALUOut,DataBusB,rdatam);
-Peripheral peripheral(reset,clk,MemRd&ALUOut[30],MemWr&ALUOut[30],ALUOut,DataBusB,rdatap,led,switch,digi,IRQ,tx,rx);
+Peripheral peripheral(reset,sysclk,clk,MemRd&ALUOut[30],MemWr&ALUOut[30],ALUOut,DataBusB,rdatap,led,switch,digi,IRQ,tx,rx);
 digitube_scan digi_scan(digi,digi_out1,digi_out2,digi_out3,digi_out4);
 assign rdata=ALUOut[30]?rdatap:rdatam;
 assign DataBusC=(MemToReg==2'd0)?ALUOut:
