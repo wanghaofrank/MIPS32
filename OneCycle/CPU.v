@@ -24,14 +24,14 @@ wire IRQ;
 //PC
 reg [31:0] PC;
 wire [31:0] PCp4;
-assign PCp4=PC+4;
+assign PCp4=PC+32'd4;
 always @(posedge clk or negedge reset)
 begin
 	if(~reset)
 		PC<=32'd0;
 	else 
 		PC<=(PCSrc==3'd0)?PCp4:
-			(PCSrc==3'd1)?ALUOut[0]?ConBA:PCp4:
+			(PCSrc==3'd1)?(ALUOut[0]?ConBA:PCp4):
 			(PCSrc==3'd2)?{PCp4[31:28],JT,2'd0}:
 			(PCSrc==3'd3)?DataBusA:
 			(PCSrc==3'd4)?32'h80000004:
@@ -48,8 +48,8 @@ assign Rs=Instruct[25:21];
 //Control
 Control ctrl(Instruct[31:26],Instruct[5:0],IRQ,PC[31],PCSrc,RegDst,RegWr,ALUSrc1,ALUSrc2,ALUFun,Sign,MemWr,MemRd,MemToReg,EXTOp,Interrupt);
 //RegFile
-wire AddrC;
-wire DataC;
+wire [4:0] AddrC;
+wire [31:0] DataC;
 assign AddrC=(RegDst==2'd0)?Rd:
 			(RegDst==2'd1)?Rt:
 			(RegDst==2'd2)?5'd31:5'd26;
@@ -69,8 +69,8 @@ wire [31:0] rdatam;
 wire [31:0] rdatap;
 wire [31:0] rdata;
 wire [11:0] digi;
-DataMem datamem(reset,clk,MemRd&(~DataBusB[30]),MemWr&(~DataBusB[30]),DataBus,ALUOut,rdatam);
-Peripheral periphrral(reset,clk,MemRd&DataBusB[30],MemWr&DataBusB[30],DataBus,ALUOut,rdatap,led,switch,digi,IRQ,tx,rx);
+DataMem datamem(reset,clk,MemRd&(~DataBusB[30]),MemWr&(~DataBusB[30]),DataBusB,ALUOut,rdatam);
+Peripheral periphrral(reset,clk,MemRd&DataBusB[30],MemWr&DataBusB[30],DataBusB,ALUOut,rdatap,led,switch,digi,IRQ,tx,rx);
 digitube_scan digi_scan(digi,digi_out1,digi_out2,digi_out3,digi_out4);
 assign rdata=DataBusB[30]?rdatap:rdatam;
 assign DataBusC=(MemToReg==2'd0)?ALUOut:
