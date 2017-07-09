@@ -1,4 +1,4 @@
-module ALU(A,B,ALUFun,Sign,Z)
+module ALU(A,B,ALUFun,Sign,Z);
 input [31:0] A;
 input [31:0] B;
 input [5:0] ALUFun;
