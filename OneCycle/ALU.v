@@ -39,8 +39,8 @@ assign s2=ALUFun[0]?(ALUFun[1]?(A[2]?{{4{s1[31]}},s1[31:4]}:s1):(A[2]?s1>>4:s1))
 assign s3=ALUFun[0]?(ALUFun[1]?(A[3]?{{8{s2[31]}},s2[31:8]}:s2):(A[3]?s2>>8:s2)):(A[3]?s2<<8:s2);
 assign SS=ALUFun[0]?(ALUFun[1]?(A[4]?{{16{s3[31]}},s3[31:16]}:s3):(A[4]?s3>>16:s3)):(A[4]?s3<<16:s3);
 //logic
-assign SL=(ALUFun[3:0]==3'b0001)?~(A|B):
-		(ALUFun[3:0]==3'b0110)?A^B:
-		(ALUFun[3:0]==3'b1000)?A&B:
-		(ALUFun[3:0]==3'b1110)?A|B:A;
+assign SL=(ALUFun[3:0]==4'b0001)?~(A|B):
+		(ALUFun[3:0]==4'b0110)?A^B:
+		(ALUFun[3:0]==4'b1000)?A&B:
+		(ALUFun[3:0]==4'b1110)?A|B:A;
 endmodule

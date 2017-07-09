@@ -36,6 +36,7 @@ UART UART0(clk,reset,TX_STATUS,RX_STATUS,TX_DATA,RX_DATA,UART_TX,UART_RX,TX_SEND
 
 initial begin
 	RX_GET = 0;
+	digi = 12'b0;
 end
 
 always@(*) begin
