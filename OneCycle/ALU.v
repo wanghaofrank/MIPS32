@@ -1,14 +1,14 @@
-module ALU(A,B,ALUFun,Sign,Z);
+module ALU(A,B,ALUFun,Sign,S);
 input [31:0] A;
 input [31:0] B;
 input [5:0] ALUFun;
 input Sign;
-output [31:0] Z;
+output [31:0] S;
 wire [31:0] SA;
 wire [31:0] SC;
 wire [31:0] SL;
 wire [31:0] SS;
-assign Z=(ALUFun[5:4]==2'b00)?SA:
+assign S=(ALUFun[5:4]==2'b00)?SA:
 		(ALUFun[5:4]==2'b01)?SL:
 		(ALUFun[5:4]==2'b10)?SS:SC;
 //Add & Sub

@@ -67,7 +67,7 @@ ALU(ALUInA,ALUInB,ALUFun,Sign,ALUOut);
 //DataMem & Peripheral
 wire [31:0] rdatam;
 wire [31:0] rdatap;
-wire [31:0] rdata
+wire [31:0] rdata;
 wire [11:0] digi;
 DataMem datamem(reset,clk,MemRd&(~DataBusB[30]),MemWr&(~DataBusB[30]),DataBus,ALUOut,rdatam);
 Peripheral periphrral(reset,clk,MemRd&DataBusB[30],MemWr&DataBusB[30],DataBus,ALUOut,rdatap,led,switch,digi,IRQ,tx,rx);
