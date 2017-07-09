@@ -1,6 +1,12 @@
 module CPU(clk,reset,digi_out1,digi_out2,digi_out3,digi_out4,led,switch,rx,tx);
 input clk,reset,rx;
-output digi_out1,digi_out2,digi_out3,digi_out4,led,switch,tx;
+output [7:0] digi_out1;
+output [7:0] digi_out2;
+output [7:0] digi_out3;
+output [7:0] digi_out4;
+output [7:0] led;
+output [7:0] switch;
+output tx;
 //Signals
 wire [2:0] PCSrc;
 wire [1:0] RegDst;
@@ -69,8 +75,8 @@ wire [31:0] rdatam;
 wire [31:0] rdatap;
 wire [31:0] rdata;
 wire [11:0] digi;
-DataMem datamem(reset,clk,MemRd&(~DataBusB[30]),MemWr&(~DataBusB[30]),DataBusB,ALUOut,rdatam);
-Peripheral periphrral(reset,clk,MemRd&DataBusB[30],MemWr&DataBusB[30],DataBusB,ALUOut,rdatap,led,switch,digi,IRQ,tx,rx);
+DataMem datamem(reset,clk,MemRd&(~ALUOut[30]),MemWr&(~ALUOut[30]),ALUOut,DataBusB,rdatam);
+Peripheral periphrral(reset,clk,MemRd&ALUOut[30],MemWr&ALUOut[30],ALUOut,DataBusB,rdatap,led,switch,digi,IRQ,tx,rx);
 digitube_scan digi_scan(digi,digi_out1,digi_out2,digi_out3,digi_out4);
 assign rdata=DataBusB[30]?rdatap:rdatam;
 assign DataBusC=(MemToReg==2'd0)?ALUOut:
