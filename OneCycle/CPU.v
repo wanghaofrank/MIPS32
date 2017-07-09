@@ -6,7 +6,7 @@ wire [2:0] PCSrc;
 wire [1:0] RegDst;
 wire [1:0] MemToReg;
 wire [5:0] ALUFun;
-wire RegWr,ALUSrc1,ALUSrc2,Sign,MemWr,MemRd,EXTOp;
+wire RegWr,ALUSrc1,ALUSrc2,Sign,MemWr,MemRd,EXTOp,Interrupt;
 //wires
 wire [31:0] Instruct;
 wire [25:0] JT;
@@ -38,7 +38,7 @@ begin
 			(PCSrc==3'd5)?32'h80000008:PCp4;
 end
 //Instruction Mem
-ROM rom(PC,Instruct);
+ROM rom({0,PC[30:0]},Instruct);
 assign JT=Instruct[25:0];
 assign Imm16=Instruct[15:0];
 assign Shamt=Instruct[10:6];
@@ -46,13 +46,15 @@ assign Rd=Instruct[15:11];
 assign Rt=Instruct[20:16];
 assign Rs=Instruct[25:21];
 //Control
-Control ctrl(Instruct[31:26],Instruct[5:0],IRQ,PCSrc,RegDst,RegWr,ALUSrc1,ALUSrc2,ALUFun,Sign,MemWr,MemRd,MemToReg,EXTOp);
+Control ctrl(Instruct[31:26],Instruct[5:0],IRQ,PC[31],PCSrc,RegDst,RegWr,ALUSrc1,ALUSrc2,ALUFun,Sign,MemWr,MemRd,MemToReg,EXTOp,Interrupt);
 //RegFile
 wire AddrC;
+wire DataC;
 assign AddrC=(RegDst==2'd0)?Rd:
-			(RegDst==2'd0)?Rt:
-			(RegDst==2'd0)?5'd31:5'd26;
-RegFile regfile(reset,clk,Rs,DataBusA,Rt,DataBusB,RegWr,AddrC,DataBusC);
+			(RegDst==2'd1)?Rt:
+			(RegDst==2'd2)?5'd31:5'd26;
+assign DataC=Interrupt?(DataBusC-32'd4):DataBusC;
+RegFile regfile(reset,clk,Rs,DataBusA,Rt,DataBusB,RegWr,AddrC,DataC);
 //ALU & Branches
 wire [31:0] ExtImm;
 wire [31:0] ALUInA;
@@ -68,10 +70,10 @@ wire [31:0] rdatap;
 wire [31:0] rdata
 wire [11:0] digi;
 DataMem datamem(reset,clk,MemRd&(~DataBusB[30]),MemWr&(~DataBusB[30]),DataBus,ALUOut,rdatam);
-Peripheral periphrral(reset,clk,MemRd&DataBusB[30],MemWr&DataBusB[30],DataBus,ALUOut,rdatap,led,switch,digi,rx,tx,IRQ);
+Peripheral periphrral(reset,clk,MemRd&DataBusB[30],MemWr&DataBusB[30],DataBus,ALUOut,rdatap,led,switch,digi,IRQ,tx,rx);
 digitube_scan digi_scan(digi,digi_out1,digi_out2,digi_out3,digi_out4);
 assign rdata=DataBusB[30]?rdatap:rdatam;
 assign DataBusC=(MemToReg==2'd0)?ALUOut:
 				(MemToReg==2'd1)?rdata:
-				(MemToReg==2'd0)?PCp4:{Imm16,16'd0};
+				(MemToReg==2'd2)?PCp4:{Imm16,16'd0};
 endmodule
