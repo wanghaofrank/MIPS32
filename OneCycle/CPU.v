@@ -1,9 +1,9 @@
 module CPU(clk,reset,digi_out1,digi_out2,digi_out3,digi_out4,led,switch,rx,tx);
 input clk,reset,rx;
-output [7:0] digi_out1;
-output [7:0] digi_out2;
-output [7:0] digi_out3;
-output [7:0] digi_out4;
+output [6:0] digi_out1;
+output [6:0] digi_out2;
+output [6:0] digi_out3;
+output [6:0] digi_out4;
 output [7:0] led;
 output [7:0] switch;
 output tx;
