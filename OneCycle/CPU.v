@@ -61,7 +61,7 @@ wire [31:0] ALUInA;
 wire [31:0] ALUInB;
 assign ExtImm=EXTOp?{{16{Imm16[15]}},Imm16}:{16'd0,Imm16};
 assign ALUInA=ALUSrc1?{27'd0,Shamt}:DataBusA;
-assign ALUInB=ALUSrc2?ExtImm:DataBusA;
+assign ALUInB=ALUSrc2?ExtImm:DataBusB;
 assign ConBA=(ExtImm<<2)+PCp4;
 ALU alu(ALUInA,ALUInB,ALUFun,Sign,ALUOut);
 //DataMem & Peripheral
