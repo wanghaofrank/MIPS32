@@ -5,7 +5,7 @@ output [6:0] digi_out2;
 output [6:0] digi_out3;
 output [6:0] digi_out4;
 output [7:0] led;
-output [7:0] switch;
+input [7:0] switch;
 output tx;
 //Signals
 wire [2:0] PCSrc;
