@@ -9,16 +9,17 @@ reg [31:0] ROM_DATA[ROM_SIZE-1:0];
 
 always@(*)
 	case(addr[7:2])	//Address Must Be Word Aligned.
-		0: data <= 32'h3c114000;
-		1: data <= 32'h26310004;
-		2: data <= 32'h241000aa;
-		3: data <= 32'hae200000;
-		4: data <= 32'h08100000;
-		5: data <= 32'h0c000000;
-		6: data <= 32'h00000000;
-		7: data <= 32'h3402000a;
-		8: data <= 32'h0000000c;
-		9: data <= 32'h0000_0000;
+/*
+		0: data <=  32'h3c114000;
+		1: data <=  32'h26310004;
+		2: data <=  32'h241000aa;
+		3: data <=  32'hae200000;
+		4: data <=  32'h08100000;
+		5: data <=  32'h0c000000;
+		6: data <=  32'h00000000;
+		7: data <=  32'h3402000a;
+		8: data <=  32'h0000000c;
+		9: data <=  32'h0000_0000;
 		10: data <= 32'h0274_8825;
 		11: data <= 32'h0800_0015;
 		12: data <= 32'h0274_8820;
@@ -32,6 +33,19 @@ always@(*)
 		20: data <= 32'h0274_8824;
 		21: data <= 32'hae11_0003;
 		22: data <= 32'h0800_0001;
+*/
+		0: data <=  32'h20062f18;
+		1: data <=  32'h20070d61;
+		2: data <=  32'h0810000a;
+		3: data <=  32'h00c05020;
+		4: data <=  32'h01475822;
+		5: data <=  32'h19600001;
+		6: data <=  32'h01475022;
+		7: data <=  32'h00e03020;
+		8: data <=  32'h01403820;
+		9: data <=  32'h0810000a;
+		10: data <= 32'h14c7fff8;
+		11: data <= 32'h00c01020;
 	   default:	data <= 32'h0800_0000;
 	endcase
 endmodule

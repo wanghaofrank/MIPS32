@@ -57,8 +57,10 @@ sha_translate = lambda num:bin(num).replace('0b','0'*(4 - ((lambda num:int(math.
 
 instruction_set = []
 for line in open("data.txt"):
-    instruction_set.append(line.strip())
+    if(line.strip() != ''):
+        instruction_set.append(line.strip())
 
+print(instruction_set)
 pos_dict = {}
 pos = 0
 
@@ -80,6 +82,7 @@ for (m,instruction) in enumerate(instruction_set):
     try:
         instruction_set[m] = re.sub(r'((?:beq|bne)[ ]*\$.+,[ ]*\$.+,[ ]*)(.+)',lambda matched:matched.group(1) + str(pos_dict[matched.group(2)] - m - 1) if not re.match(r'-?(0x[0-9a-e]+|[0-9]+)',matched.group(2)) else matched.group(1) + matched.group(2),instruction)
         instruction_set[m] = re.sub(r'((?:jal[ ]|j[ ])[ ]*)(.+)',lambda matched:matched.group(1) + str(pos_dict[matched.group(2)]) if not re.match(r'-?(0x[0-9a-e]+|[0-9]+)',matched.group(2)) else matched.group(1) + matched.group(2), instruction_set[m])
+        instruction_set[m] = re.sub(r'((?:blez|bgtz|bltz)[ ]+\$.+,[ ]*)(.+)',lambda matched:matched.group(1) + str(pos_dict[matched.group(2)] - m - 1) if not re.match(r'-?(0x[0-9a-e]+|[0-9]+)',matched.group(2)) else matched.group(1) + matched.group(2),instruction_set[m])
     except Exception as e:
         print('Error!',e)
         

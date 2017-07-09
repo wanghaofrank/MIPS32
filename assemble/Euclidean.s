@@ -28,7 +28,7 @@ addi $t0, $t0, 3
 addi $s0, $s0, 4
 sw $t0, 0($s0)
 
-add $s0, $s0, $8
+addi $s0, $s0, 8
 add $v0, $0, $0
 getNumber1:
 lw $t0, 0($s0)
@@ -63,7 +63,7 @@ addi $s0, $s0, 0x000C
 sw $v0, 0($s0) # LED 
 
 ExceptionProcess:
-nop
+jr k1
 
 InterruptProcess:
 add $s7, $0, $0
@@ -88,7 +88,7 @@ srl $t3, $t3, 4
 jal Decoder
 or $t3, $t3, 0x0100
 sw $t3, 0($s7)
-j start # must be a register save the instruction before interruption happened.
+j k0 # must be a register save the instruction before interruption happened.
 LabelB:
 add $t3, $0, $0
 and $t3, $a1, 0x000F
@@ -96,7 +96,7 @@ srl $t3, $t3, 4
 jal Decoder
 or $t3, $t3, 0x0200
 sw $t3, 0($s7)
-j start
+j k0
 LabelC:
 add $t3, $0, $0
 and $t3, $a0, 0x00F0
@@ -104,7 +104,7 @@ srl $t3, $t3, 4
 jal Decoder
 or $t3, $t3, 0x0400
 sw $t3, 0($s7)
-j start
+j k0
 LabelD:
 add $t3, $0, $0
 and $t3, $a0, 0x000F
@@ -112,7 +112,7 @@ srl $t3, $t3, 4
 jal Decoder
 or $t3, $t3, 0x0800
 sw $t3, 0($s7)
-j start
+j k0
 Decoder:
 addi $t0, $0, 0
 beq $t3, $t0, L1
