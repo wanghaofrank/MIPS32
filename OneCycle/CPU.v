@@ -38,7 +38,7 @@ begin
 			(PCSrc==3'd5)?32'h80000008:PCp4;
 end
 //Instruction Mem
-ROM rom({0,PC[30:0]},Instruct);
+ROM rom({1'b0,PC[30:0]},Instruct);
 assign JT=Instruct[25:0];
 assign Imm16=Instruct[15:0];
 assign Shamt=Instruct[10:6];
