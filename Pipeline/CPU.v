@@ -78,17 +78,17 @@ always @(posedge clk or negedge reset)
 begin
 	if(~reset)
 		PC<=32'd0;
+	else if(is_ILLOP)
+		PC<=32'h80000004;
+	else if(is_XADR)
+		PC<=32'h80000008;
 	else if(~is_load_use) begin
 		if(is_branch)
 			PC<=ID_EX_CONBA;
 		else if(is_jump)
 			PC<={IF_ID_PC4[31:28],IF_ID_ins[25:0],2'd0};
 		else if(is_jump_r)
-			PC<=DataBusA;
-		else if(is_ILLOP)
-			PC<=32'h80000004;
-		else if(is_XADR)
-			PC<=32'h80000008;
+			PC<=DataBusA;	
 		else
 			PC<=PCp4;
 	end
@@ -101,9 +101,13 @@ always @(posedge clk or negedge reset) begin
 		IF_ID_ins<=32'd0;
 		IF_ID_PC4<=32'd0;
 	end
-	else if(is_branch||is_jump||is_jump_r||is_XADR||is_ILLOP) begin
-		IF_ID_PC4<=32'd0;
+	else if(is_branch||is_jump||is_jump_r) begin
+		IF_ID_PC4<=IF_ID_PC4[31]?32'h80000000:32'd0;
 		IF_ID_ins<=32'd0;
+	end
+	else if(is_XADR||is_ILLOP) begin
+		IF_ID_PC4<=32'h80000000;
+		IF_ID_ins<=32'h00000000;
 	end
 	else if(~is_load_use) begin
 		IF_ID_PC4<=PCp4;
@@ -172,7 +176,7 @@ always @(posedge clk or negedge reset) begin
 		ID_EX_shamt<=Shamt;
 		ID_EX_Rs<=Rs;
 		ID_EX_Rt<=Rt;
-		if(is_load_use||is_branch) begin
+		if((is_load_use||is_branch)&&~is_XADR&&~is_ILLOP) begin
 			ID_EX_PCSrc<=3'd0;
 			ID_EX_AddrC<=5'd0;
 			ID_EX_MemToReg<=2'd0;
