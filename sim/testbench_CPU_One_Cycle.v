@@ -1,3 +1,5 @@
+`timescale 1ns/1ns
+
 module CPU_sim;
 reg clk,reset;
 wire [6:0] digi_out1;
