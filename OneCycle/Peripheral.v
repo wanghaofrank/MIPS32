@@ -1,8 +1,8 @@
 `timescale 1ns/1ps
 
-module Peripheral (reset,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_TX,UART_RX);
+module Peripheral (reset,sysclk,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_TX,UART_RX);
 
-input reset,clk;
+input reset,sysclk,clk;
 input rd,wr;
 input [31:0] addr;
 input [31:0] wdata;
@@ -32,7 +32,7 @@ reg TX_SEND;
 
 assign irqout = TCON[2];
 
-UART UART0(clk,reset,TX_STATUS,RX_STATUS,TX_DATA,RX_DATA,UART_TX,UART_RX,TX_SEND);
+UART UART0(sysclk,clk,reset,TX_STATUS,RX_STATUS,TX_DATA,RX_DATA,UART_TX,UART_RX,TX_SEND);
 
 initial begin
 	RX_GET = 0;

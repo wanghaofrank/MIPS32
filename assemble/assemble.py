@@ -36,7 +36,7 @@ def MachineCodeTranslate(assemblecode):
         a = re.match(r'(.*)[ ]+\$(.*)[ ]*,[ ]*([^\$]+)',assemblecode)
         if a:return opcode[a.group(1)] + register_translated(a.group(2)) + '0'*5 + imme_translated((lambda x:int(x,16) if x.startswith('0x') else int(x,10))(a.group(3)))
         a = re.match(r'(jal|j)[ ]+(.+)',assemblecode)
-        if a:return opcode[a.group(1)] + imme_translated_26((lambda x:int(x,16) if x.startswith('0x') else int(x,10))(a.group(2)) + 2**20)
+        if a:return opcode[a.group(1)] + imme_translated_26((lambda x:int(x,16) if x.startswith('0x') else int(x,10))(a.group(2)))
         a = re.match(r'(jr)[ ]+\$(.+)',assemblecode)
         if a:return opcode['jr'] + register_translated(a.group(2)) + '0'*15 + funccode['jr']
         a = re.match(r'jalr[ ]+\$(.+)[ ]*,[ ]*\$(.+)',assemblecode)

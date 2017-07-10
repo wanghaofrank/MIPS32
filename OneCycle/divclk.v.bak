@@ -1,7 +1,6 @@
 module divclk(sysclk,clk,reset);
 input sysclk,reset;
-output clk;
-reg clk;
+output reg clk;
 reg [2:0] state;
 always @(posedge sysclk or negedge reset)
 begin
