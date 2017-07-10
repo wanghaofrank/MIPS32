@@ -269,7 +269,7 @@ Peripheral peripheral(reset,sysclk,clk,EX_MEM_MemRd&EX_MEM_ALUOUT[30],EX_MEM_Mem
 digitube_scan digi_scan(digi,digi_out1,digi_out2,digi_out3,digi_out4);
 assign rdata=EX_MEM_ALUOUT[30]?rdatap:rdatam;
 //MEM_WB
-always @(posedge clk or negedge reset) begin
+always @(posedge clk or posedge reset) begin
 	if (~reset) begin
 		MEM_WB_READ_DATA<=32'd0;
 		MEM_WB_PC4<=32'd0;
