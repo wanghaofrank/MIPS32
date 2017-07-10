@@ -24,10 +24,10 @@ assign MemToReg=((Interrupt|undef)||(Opcode==6'h03)||(Opcode==6'h00&&funct==6'h0
 				(Opcode==6'h0f)?2'd3:
 				(Opcode==6'h23)?2'd1:2'd0;
 assign EXTOp=~(Opcode==6'h0c);
-assign MemRd=(Opcode==6'h23);
-assign MemWr=(Opcode==6'h2b);
+assign MemRd=(~Interrupt)&(Opcode==6'h23);
+assign MemWr=(~Interrupt)&(Opcode==6'h2b);
 assign Sign=1'b1;
-assign RegWr=~((Opcode>=6'h04&&Opcode<=6'h07)||(Opcode==6'h01)||(Opcode==6'h02)||(Opcode==6'h2b)||(Opcode==6'h00&&funct==6'h08));
+assign RegWr=Interrupt|(~((Opcode>=6'h04&&Opcode<=6'h07)||(Opcode==6'h01)||(Opcode==6'h02)||(Opcode==6'h2b)||(Opcode==6'h00&&funct==6'h08)));
 assign ALUSrc1=(Opcode==6'h00)&&((funct==6'h00)||(funct==6'h02)||(funct==6'h03));
 assign ALUSrc2=~(Opcode>=6'h00&&Opcode<=6'h07);
 assign ALUFun=((Opcode==6'h00&&funct==6'h22)||(Opcode==6'h00&&funct==6'h23))?6'b000001:
