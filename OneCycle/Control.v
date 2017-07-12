@@ -17,6 +17,7 @@ assign PCSrc=Interrupt?3'd4:
 			(Opcode==6'h02||Opcode==6'h03)?3'd2:
 			(Opcode==6'h00&&(funct==6'h08||funct==6'h09))?3'd3:
 			undef?3'd5:3'd0;
+
 assign RegDst=(Interrupt|undef)?2'd3:
 			  (Opcode==6'h03)?2'd2:
 			  (Opcode==6'h00)?2'd0:2'd1;

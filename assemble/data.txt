@@ -30,6 +30,7 @@ sw $t0, 0($s0)
 
 addi $s0, $s0, 24
 add $v0, $0, $0
+
 getNumber1:
 lw $t0, 0($s0)
 and $t1, $t0, $s1
@@ -71,6 +72,11 @@ addi $s0, $s0, 0x0018
 sw $v0, 0($s0)
 
 ForeverLoop:
+add $v1, $0, $0
+add $v1, $0, $0
+add $v1, $0, $0
+add $v1, $0, $0
+add $v1, $0, $0
 j ForeverLoop
 
 ExceptionProcess:
