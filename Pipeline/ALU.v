@@ -8,7 +8,6 @@ wire [31:0] SA;
 wire [31:0] SC;
 wire [31:0] SL;
 wire [31:0] SS;
-wire ztest;
 assign S=(ALUFun[5:4]==2'b00)?SA:
 		(ALUFun[5:4]==2'b01)?SL:
 		(ALUFun[5:4]==2'b10)?SS:SC;
