@@ -12,10 +12,11 @@ wire undef;
 assign Interrupt=IRQ&&(~ker);
 assign undef=~(((Opcode>=6'h01&&Opcode<=6'h0c)||(Opcode==6'h0f)||(Opcode==6'h23)||(Opcode==6'h2b))||
 	((Opcode==6'h0)&&((funct>=6'h20&&funct<=6'h27)||(funct==6'h00)||(funct==6'h02)||(funct==6'h03)||(funct==6'h2a)||(funct==6'h08)||(funct==6'h09))));
-assign PCSrc=Interrupt?3'd4:((Opcode>=6'h04&&Opcode<=6'h07)||(Opcode==6'h01))?3'd1:
-			(Opcode==6'h02||Opcode==6'h03)?3'd2:
-			(Opcode==6'h00&&(funct==6'h08||funct==6'h09))?3'd3:
-			undef?3'd5:3'd0;
+assign PCSrc=(Opcode==6'h00&&funct==6'h00)?3'd0:Interrupt?3'd4:((Opcode>=6'h04&&Opcode<=6'h07)||(Opcode==6'h01))?3'd1://branch
+			(Opcode==6'h02||Opcode==6'h03)?3'd2://j&&jal
+			(Opcode==6'h00&&(funct==6'h08||funct==6'h09))?3'd3://jr&&jalr
+			undef?3'd5://exception
+			3'd0;//PC+4
 
 assign RegDst=(Interrupt|undef)?2'd3:
 			  (Opcode==6'h03)?2'd2:

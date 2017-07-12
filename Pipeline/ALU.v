@@ -8,17 +8,14 @@ wire [31:0] SA;
 wire [31:0] SC;
 wire [31:0] SL;
 wire [31:0] SS;
+wire ztest;
 assign S=(ALUFun[5:4]==2'b00)?SA:
 		(ALUFun[5:4]==2'b01)?SL:
 		(ALUFun[5:4]==2'b10)?SS:SC;
 //Add & Sub
 wire Z,V,N,lc;
-wire [31:0] b;
-assign b=(~ALUFun[3])?(ALUFun[0]?(~B)+32'd1:B):32'd0;
-assign {lc,SA}={1'b0,A}+{1'b0,b};
-assign V=Sign?(lc^A[31])&(~A[31]^b[31]):lc^ALUFun[0];
+Adder adder(SA,lc,A,ALUFun[3]?32'd0:(ALUFun[0]?(~B):B),ALUFun[3]?1'b0:(ALUFun[0]?1'b1:1'b0),V,Z);
 assign N=Sign?SA[31]&(~V):(~lc)&ALUFun[0];
-assign Z=(&(~SA))&(~V);
 //CMP
 wire z;
 assign z=(ALUFun[3:1]==3'b000)?~Z:
