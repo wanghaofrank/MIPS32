@@ -1,0 +1,69 @@
+\documentclass{ctexart}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{color}
+\usepackage{diagbox}
+\usepackage{lmodern}
+\usepackage{listings}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage[titletoc]{appendix}
+\usepackage{lipsum}
+\usepackage[colorlinks,linkcolor = black]{hyperref}
+
+\newcommand{\blue}{\textcolor{blue}}
+\newcommand{\rotate}{\rotatebox{90}}
+
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+backgroundcolor=\color{white},   % choose the background color
+basicstyle=\ttfamily,        % size of fonts used for the code
+columns=fullflexible,
+breaklines=true,                 % automatic line breaking only at whitespace
+captionpos=b,                    % sets the caption-position to bottom
+tabsize=4,
+commentstyle=\color{mygreen},    % comment style
+escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+keywordstyle=\color{blue},       % keyword style
+stringstyle=\color{mymauve}\ttfamily,     % string literal style
+frame=single,
+% rulesepcolor=\color{red!20!green!20!blue!20},
+% identifierstyle=\color{red},
+% language=c++,
+}
+
+\geometry{left = 3cm,right = 3cm,top = 2.5cm, right = 2.5cm}
+
+\begin{document}
+	\title{数字逻辑与处理器基础实验 \\ 32位MIPS处理器设计}
+	\author{孙伟艺\thanks{无52 2015011010}\\ 白钦博\thanks{无52 2015010996} \\ 王敏虎 \thanks{2015011003}}
+	\date{\today}
+	\maketitle
+	\clearpage
+
+	\section{实验目的}
+	\begin{itemize}
+		\item 熟悉现代处理器的基本工作原理
+		\item 掌握单周期和流水线处理器的设计方法
+	\end{itemize}
+
+	\section{设计方案}
+		\subsection{ALU}
+			(孙伟艺)
+		\subsection{单周期数据通路}
+			(孙伟艺)
+		\subsection{流水线数据通路}
+			(白钦博)
+		\subsection{外设}
+		\subsection{汇编程序}
+	\section{关键代码与文件清单}
+	\section{仿真结果与分析}
+	\section{综合情况}
+	\section{硬件调试情况}
+	\section{思想体会}
+
+\end{document}
