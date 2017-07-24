@@ -8,6 +8,7 @@
 \usepackage{fontspec}
 \usepackage{graphicx}
 \usepackage{longtable}
+\usepackage[cache=false]{minted}
 \usepackage[titletoc]{appendix}
 \usepackage{lipsum}
 \usepackage[colorlinks,linkcolor = black]{hyperref}
@@ -40,7 +41,7 @@ frame=single,
 
 \begin{document}
 	\title{数字逻辑与处理器基础实验 \\ 32位MIPS处理器设计}
-	\author{孙伟艺\thanks{无52 2015011010}\\ 白钦博\thanks{无52 2015010996} \\ 王敏虎 \thanks{2015011003}}
+	\author{孙伟艺\thanks{无52 2015011010}\\ 白钦博\thanks{无52 2015010996} \\ 王敏虎 \thanks{无52 2015011003}}
 	\date{\today}
 	\maketitle
 	\clearpage
@@ -59,8 +60,176 @@ frame=single,
 		\subsection{流水线数据通路}
 			(白钦博)
 		\subsection{外设}
-		\subsection{汇编程序}
+		本次实验需要使用LED灯、七段数码管、串口等外设参与CPU工作，为CPU提供运算所需要的数据并将CPU的运算结果表示出来。外设不是CPU的硬件组成部分，
+		对于CPU，外设被看作内存中的一个普通地址，CPU不需要了解外设工作的具体细节，只需要执行程序员编写好的程序，将数据存入对应的地址即可，后续工作
+		应当由外设电路独立完成。
+
+		本次实验中，地址\verb"0x40000000"到\verb"0x40000020"被用于外设地址。在CPU的连接中，这些地址被连接到专门的电路而非内存中。
+
+		地址如下表被分配给外设。
+
+		\begin{table}[ht]
+			\centering
+			\begin{tabular}{|c|c|}
+				\hline
+				地址 & 功能  \\
+				\hline
+				\verb"0x40000000" & 定时器TH \\
+				\verb"0x40000004" & 定时器TL \\
+				\verb"0x40000008" & 定时器控制TCON \\
+				\verb"0x4000000C" & LED \\
+				\verb"0x40000010" & Switch \\
+				\verb"0x40000014" & 七段数码管 \\
+				\verb"0x40000018" & UART发送数据 \\
+				\verb"0x4000001C" & UART接收数据 \\
+				\verb"0x40000020" & 串口状态 \\ 
+				\hline
+			\end{tabular}
+		\end{table}
+
+		写出外设verilog描述文件
+
+\begin{minted}{verilog}
+always@(*) begin
+	if(rd) begin
+		case(addr)
+			32'h40000000: rdata <= TH;			
+			32'h40000004: rdata <= TL;			
+			32'h40000008: rdata <= {29'b0,TCON};				
+			32'h4000000C: rdata <= {24'b0,led};			
+			32'h40000010: rdata <= {24'b0,switch};
+			32'h40000014: rdata <= {20'b0,digi};
+			32'h40000018: rdata <= {24'b0,TX_DATA};
+			32'h4000001C: begin
+				rdata <= {24'b0,RX_DATA};	
+				RX_GET <= 0;
+			end
+			32'h40000020: rdata <= {30'b0,RX_GET,TX_STATUS};
+			default: rdata <= 32'b0;
+		endcase
+	end
+	else
+		rdata <= 32'b0;
+	if (RX_STATUS == 1) RX_GET<=1;
+end
+
+always@(negedge reset or posedge clk) begin
+	if(~reset) begin
+		TH <= 32'b0;
+		TL <= 32'b0;
+		TCON <= 3'b0;	
+		TX_SEND <= 0;
+		led <= 8'b0;
+	end
+	else begin
+		if(TCON[0]) begin	//timer is enabled
+			if(TL==32'hffffffff) begin
+				TL <= TH;
+				if(TCON[1]) TCON[2] <= 1'b1;		//irq is enabled
+			end
+			else TL <= TL + 1;
+		end
+		
+		if(wr) begin
+			case(addr)
+				32'h40000000: TH <= wdata;
+				32'h40000004: TL <= wdata;
+				32'h40000008: TCON <= wdata[2:0];		
+				32'h4000000C: led <= wdata[7:0];			
+				32'h40000014: digi <= wdata[11:0];
+				32'h40000018: begin
+					TX_DATA <= wdata[7:0];
+					TX_SEND <= 1;
+				end
+				default:;
+			endcase
+		end
+		if (TX_SEND == 1) TX_SEND <= 0;
+	end
+end				
+\end{minted}
+
+以下为实验要求编写的各外设的说明
+
+			\subsubsection{LED灯}
+			LED灯是本次实验中比较简单的外设。在CPU访问\verb"0x4000000C"地址时将对应位数赋给相应管脚即可。
+			\subsubsection{七段数码管}
+			本次实验使用四个七段数码管，由于要求使用软件译码，硬件部分较为简单，七段数码管使用12位进行控制，前4位表示当前点亮的数码管位置，
+			后八位表示七段数码管各管脚的电平，与LED灯类似的是，当CPU访问\verb"0x40000014"时，将对应位数赋给对应接线即可。复杂的译码和控制部分
+			将在汇编程序中说明。
+			\subsubsection{switch开关}
+			switch开关是输入设备，不能被写入，当CPU试图读\verb"0x40000010"时，将对应连线上的电平返回。
+			\subsubsection{串口}
+			
+			串口使用轮询方式编写，三位\verb"0x40000018",\verb"0x4000001C",\verb"0x40000020"控制，其中\verb"0x40000020"是串口状态位，
+			其最后两位中的第一位用来标示是否收到新的数据，第二位用来表示目前串口的发送状态。当数据被写入\verb"0x40000018"时，串口将
+			自动发送其后八位并修改串口发送状态，当\verb"0x4000001C"访问后，串口将修改串口状态位，将接收标志位置为低以等待下一个数据。
+
+			编写汇编程序时，应当首先访问串口状态位，确定串口已经接收到数据，再访问串口接收数据地址。使用轮询方式的一个问题即是，如果轮询时间过长，串口中的数据
+			可能会丢失，但是在本实验的条件下，9600波特率的串口接收一次数据的时间足以CPU完成上万个时钟周期的运算，可以认为串口数据能够被及时访问。
+
+
+		\subsection{汇编程序与汇编器}
+		\subsubsection{汇编程序}
+			本次实验中的汇编程序由两部分组成，一部分是从串口读入数据并运行算法计算最大公约数，另一部分是数码管的译码和显示，
+			由于实验中定时器的中断只用来完成数码管的扫描，因此数码管的译码和显示代码就是中断处理代码。
+
+			第一部分代码如下。首先启动定时器，而后检查串口标志位，当串口标志位有效时读串口数据。待输入的两个数据均读取完成后，
+			计算结果并访问外设以显示结果。当完成任务后，CPU将进入无限循环的状态以便观察结果。
+
+			第二部分的代码如首先将处理与定时器相关的中断，而后保护现场，由于程序比较简单，主程序与中断处理程序未使用相同的寄存器，
+			因此这一步在代码中未体现。中断处理代码首先检查数码管对应外设数据，并移动扫描位，而后进行软件译码，软件译码的过程即case块
+			语法转换成汇编语法，较为繁琐，因此在报告中删去部分。软件译码完成后，修改数码管外设对应地址值，重新启动定时器，回到主程序继续执行。
+
+			两部分代码见于附录。
+
+
+		\subsubsection{汇编器}
+			汇编器使用python语言编写。汇编器依照以下步骤执行工作：
+			\begin{enumerate}
+				\item 遍历代码，计算Label名称对应的地址值
+				\item 遍历代码，将Label名称表示的地址转换成相对地址或绝对地址
+				\item 遍历代码，将汇编程序转换成机器码
+			\end{enumerate}
+			匹配和替换工作主要使用正则表达式完成，主要代码见于附录。
+
 	\section{关键代码与文件清单}
+\begin{verbatim}
+\├\─assemble
+\│      assemble.py  汇编器程序
+\│      data.txt		实验使用测试程序
+\│      encode.py	机器码转换为verilog文件结构程序
+\│      m_code.txt	汇编器转换机器码
+\│      verilog.txt	直接贴入verilog rom.v 文件程序
+\│
+\├\─OneCycle
+\│  \│  Adder.v			全加器
+\│  \│  ALU.v				单周期ALU
+\│  \│  Control.v			单周期控制信号生成文件
+\│  \│  CPU.v				单周期CPU结构文件
+\│  \│  DataMem.v			单周期Data Memory
+\│  \│  digitube_scan.v	
+\│  \│  divclk.v			分频模块
+\│  \│  Peripheral.v		外设模块
+\│  \│  regfile.v			寄存器
+\│  \│  rom.v				指令存储器
+\│  \│  UART.v			串口相关电路实现
+\│  \│
+\│  \└\─output_files
+\├\─Pipeline
+\│  \│  Adder.v			全加器
+\│  \│  ALU.v				流水线ALU
+\│  \│  Control.v			流水线控制信号生成文件
+\│  \│  CPU.v				流水线CPU结构文件
+\│  \│  DataMem.v			流水线Data Memory
+\│  \│  digitube_scan.v	
+\│  \│  Peripheral.v		外设模块
+\│  \│  regfile.v			寄存器
+\│  \│  rom.v				指令存储器
+\│  \│  UART.v			串口相关电路实现
+\│  \│
+\│  \└\─output_files
+\end{verbatim}
 	\section{仿真结果与分析}
 	\section{综合情况}
 	\section{硬件调试情况}

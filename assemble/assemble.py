@@ -50,10 +50,11 @@ def MachineCodeTranslate(assemblecode):
     except Exception as e:
         print("Unknown Error!",e)
         return None
+
 register_translated = lambda register:(lambda num:bin(num).replace('0b','0'*(4 - (lambda num:int(math.log2(num)) if num > 0 else 0)(num))))(register_name.index(register))
 imme_translated = lambda imme:'0'*(18 - len(bin(imme))) + bin(imme).replace('0b','') if imme >= 0 else '0'*(18 - len(bin(2**16 - abs(imme)))) + bin(2**16 - abs(imme)).replace('0b','')
 imme_translated_26 = lambda imme:'0'*(28 - len(bin(imme))) + bin(imme).replace('0b','') if imme >= 0 else '0'*(28 - len(bin(2**26 - abs(imme)))) + bin(2**26 - abs(imme)).replace('0b','')
-sha_translate = lambda num:bin(num).replace('0b','0'*(4 - ((lambda num:int(math.log2(num)) if num >= 0 else 0)(num))))
+sha_translate = lambda num:bin(num).replace('0b','0'*(4 - ((lambda num:int(math.log2(num)) if num > 0 else 0)(num))))
 
 instruction_set = []
 for line in open("data.txt"):
@@ -87,7 +88,6 @@ for (m,instruction) in enumerate(instruction_set):
         print('Error!',e)
         
 machine_instruction_set = [MachineCodeTranslate(instruction) for instruction in instruction_set]
-
 #machine_instruction_set = [instruction for instruction in machine_instruction_set if instruction]
 
 machine_instruction_set = ['0x' + "".join([hex(int("".join(instruction[i*4:(i+1)*4]),2)).replace('0x','') for i in range(8)]) for instruction in machine_instruction_set]
