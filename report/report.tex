@@ -87,67 +87,6 @@ frame=single,
 			\end{tabular}
 		\end{table}
 
-		写出外设verilog描述文件
-
-\begin{minted}{verilog}
-always@(*) begin
-	if(rd) begin
-		case(addr)
-			32'h40000000: rdata <= TH;			
-			32'h40000004: rdata <= TL;			
-			32'h40000008: rdata <= {29'b0,TCON};				
-			32'h4000000C: rdata <= {24'b0,led};			
-			32'h40000010: rdata <= {24'b0,switch};
-			32'h40000014: rdata <= {20'b0,digi};
-			32'h40000018: rdata <= {24'b0,TX_DATA};
-			32'h4000001C: begin
-				rdata <= {24'b0,RX_DATA};	
-				RX_GET <= 0;
-			end
-			32'h40000020: rdata <= {30'b0,RX_GET,TX_STATUS};
-			default: rdata <= 32'b0;
-		endcase
-	end
-	else
-		rdata <= 32'b0;
-	if (RX_STATUS == 1) RX_GET<=1;
-end
-
-always@(negedge reset or posedge clk) begin
-	if(~reset) begin
-		TH <= 32'b0;
-		TL <= 32'b0;
-		TCON <= 3'b0;	
-		TX_SEND <= 0;
-		led <= 8'b0;
-	end
-	else begin
-		if(TCON[0]) begin	//timer is enabled
-			if(TL==32'hffffffff) begin
-				TL <= TH;
-				if(TCON[1]) TCON[2] <= 1'b1;		//irq is enabled
-			end
-			else TL <= TL + 1;
-		end
-		
-		if(wr) begin
-			case(addr)
-				32'h40000000: TH <= wdata;
-				32'h40000004: TL <= wdata;
-				32'h40000008: TCON <= wdata[2:0];		
-				32'h4000000C: led <= wdata[7:0];			
-				32'h40000014: digi <= wdata[11:0];
-				32'h40000018: begin
-					TX_DATA <= wdata[7:0];
-					TX_SEND <= 1;
-				end
-				default:;
-			endcase
-		end
-		if (TX_SEND == 1) TX_SEND <= 0;
-	end
-end				
-\end{minted}
 
 以下为实验要求编写的各外设的说明
 
@@ -156,7 +95,7 @@ end
 			\subsubsection{七段数码管}
 			本次实验使用四个七段数码管，由于要求使用软件译码，硬件部分较为简单，七段数码管使用12位进行控制，前4位表示当前点亮的数码管位置，
 			后八位表示七段数码管各管脚的电平，与LED灯类似的是，当CPU访问\verb"0x40000014"时，将对应位数赋给对应接线即可。复杂的译码和控制部分
-			将在汇编程序中说明。
+			将在汇编程序中进行。
 			\subsubsection{switch开关}
 			switch开关是输入设备，不能被写入，当CPU试图读\verb"0x40000010"时，将对应连线上的电平返回。
 			\subsubsection{串口}
@@ -195,43 +134,70 @@ end
 
 	\section{关键代码与文件清单}
 \begin{verbatim}
-\├\─assemble
-\│      assemble.py  汇编器程序
-\│      data.txt		实验使用测试程序
-\│      encode.py	机器码转换为verilog文件结构程序
-\│      m_code.txt	汇编器转换机器码
-\│      verilog.txt	直接贴入verilog rom.v 文件程序
-\│
-\├\─OneCycle
-\│  \│  Adder.v			全加器
-\│  \│  ALU.v				单周期ALU
-\│  \│  Control.v			单周期控制信号生成文件
-\│  \│  CPU.v				单周期CPU结构文件
-\│  \│  DataMem.v			单周期Data Memory
-\│  \│  digitube_scan.v	
-\│  \│  divclk.v			分频模块
-\│  \│  Peripheral.v		外设模块
-\│  \│  regfile.v			寄存器
-\│  \│  rom.v				指令存储器
-\│  \│  UART.v			串口相关电路实现
-\│  \│
-\│  \└\─output_files
-\├\─Pipeline
-\│  \│  Adder.v			全加器
-\│  \│  ALU.v				流水线ALU
-\│  \│  Control.v			流水线控制信号生成文件
-\│  \│  CPU.v				流水线CPU结构文件
-\│  \│  DataMem.v			流水线Data Memory
-\│  \│  digitube_scan.v	
-\│  \│  Peripheral.v		外设模块
-\│  \│  regfile.v			寄存器
-\│  \│  rom.v				指令存储器
-\│  \│  UART.v			串口相关电路实现
-\│  \│
-\│  \└\─output_files
+├─assemble
+│      assemble.py  汇编器程序
+│      data.txt		实验使用测试程序
+│      encode.py	机器码转换为verilog文件结构程序
+│      m_code.txt	汇编器转换机器码文件
+│      verilog.txt	直接贴入verilog rom.v 文件
+│
+├─OneCycle
+│  │  Adder.v			全加器
+│  │  ALU.v				单周期ALU
+│  │  Control.v			单周期控制信号生成文件
+│  │  CPU.v				单周期CPU结构文件
+│  │  DataMem.v			单周期Data Memory
+│  │  digitube_scan.v	
+│  │  divclk.v			分频模块
+│  │  Peripheral.v		外设模块
+│  │  regfile.v			寄存器
+│  │  rom.v				指令存储器
+│  │  UART.v			串口相关电路实现
+│  │
+│  └─output_files
+├─Pipeline
+│  │  Adder.v			全加器
+│  │  ALU.v				流水线ALU
+│  │  Control.v			流水线控制信号生成文件
+│  │  CPU.v				流水线CPU结构文件
+│  │  DataMem.v			流水线Data Memory
+│  │  digitube_scan.v	
+│  │  Peripheral.v		外设模块
+│  │  regfile.v			寄存器
+│  │  rom.v				指令存储器
+│  │  UART.v			串口相关电路实现
+│  │
+│  └─output_files
 \end{verbatim}
 	\section{仿真结果与分析}
 	\section{综合情况}
+	单周期各项性能指标如下：
+	\begin{center}
+		\begin{tabular}{|c|c|}
+		\hline
+		性能指标 & \\
+		\hline
+		Total Logic Elements & 4498(14\%) \\
+		Total Registers & 3772(11\%) \\
+		Total Pins & 48(10\%) \\
+		Restricted Fmax & $41.55 MHz$ \\  
+		\hline
+		\end{tabular}
+	\end{center}
+	
+	流水线各项性能指标如下：
+	\begin{center}
+		\begin{tabular}{|c|c|}
+		\hline
+		性能指标 & \\
+		\hline
+		Total Logic Elements & 3803(11\%) \\
+		Total Registers & 3695(11\%) \\
+		Total Pins & 48(10\%) \\
+		Restricted Fmax & $88.0 MHz$ \\  
+		\hline
+		\end{tabular}
+	\end{center}
 	\section{硬件调试情况}
 	\section{思想体会}
 
