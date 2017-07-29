@@ -1,6 +1,9 @@
 import math
 import re
-register_name = ['0','at','v0','v1','a0','a1','a2','a3','t0','t1','t2','t3','t4','t5','t6','t7','s0','s1','s2','s3','s4','s5','s6','s7','t8','t9','k0','k1','gp','sp','fp','ra']
+register_name = ['0', 'at', 'v0', 'v1', 'a0', 'a1', 'a2', 'a3', 't0',
+                 't1', 't2', 't3', 't4', 't5', 't6', 't7', 's0', 's1',
+                 's2', 's3', 's4', 's5', 's6', 's7', 't8', 't9', 'k0', 
+                 'k1', 'gp', 'sp', 'fp', 'ra']
 opcode = {
     'nop':'000000',
     'lw':'100011','sw':'101011','lui':'001111',
@@ -57,7 +60,7 @@ imme_translated_26 = lambda imme:'0'*(28 - len(bin(imme))) + bin(imme).replace('
 sha_translate = lambda num:bin(num).replace('0b','0'*(4 - ((lambda num:int(math.log2(num)) if num > 0 else 0)(num))))
 
 instruction_set = []
-for line in open("data.txt"):
+for line in open("./datat.txt"):
     if(line.strip() != ''):
         instruction_set.append(line.strip())
 

@@ -1,13 +1,9 @@
-sll $0, $0, 0
-addi $t5, $0, 3
-addi $t6, $t5, -1
-lui $s0, 0x1000
-lw $t1, 0($s0)
-sw $t5, 4($s0)
-lw $t2, 4($s0)
-sw $t6, 8($s0)
-lw $t3, 8($s0)
-add $t4, $t2, $t3
-beq $t3, $t4, JUMP
-JUMP:
-addi $t5, $t4, 3
+j A
+addi $t0, $0, 1
+addi $t0, $0, 2
+addi $t0, $0, 3
+A:
+addi $t0, $0, 10
+j B
+B:
+j B

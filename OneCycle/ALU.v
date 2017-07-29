@@ -21,7 +21,7 @@ assign z=(ALUFun[3:1]==3'b000)?~Z:
 	(ALUFun[3:1]==3'b001)?Z:
 	(ALUFun[3:1]==3'b010)?N:
 	(ALUFun[3:1]==3'b101)?N:
-	(ALUFun[3:1]==3'b110)?N|Z:
+	(ALUFun[3:1]==3'b110)?(N|Z):
 	(ALUFun[3:1]==3'b111)?~(N|Z):0;
 assign SC={31'd0,z};
 //shift

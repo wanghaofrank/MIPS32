@@ -34,6 +34,7 @@ always@(*)
 		21: data <= 32'hae11_0003;
 		22: data <= 32'h0800_0001;
 */
+
 0: data <=32'h08000003;
 1: data <=32'h0800003c;
 2: data <=32'h0800003b;
@@ -215,6 +216,8 @@ always@(*)
 178: data <=32'h01ee7025;
 179: data <=32'haeee0000;
 180: data <=32'h03400008;
+
+
 	   default:	data <= 32'h0800_0000;
 	endcase
 endmodule
