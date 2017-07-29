@@ -66,6 +66,12 @@ frame=single,
 		\label{pipeline1}
 		\end{figure}
 
+		\subsubsection{对单周期电路的直接调整}
+		\begin{enumerate}
+		\item 单周期电路中，负责写单周期的同学将LUOp的控制机信号省掉了，将LUI的运算结果直接最为最后一个多路复用器到寄存器堆的输入，并且修改了MemToReg，以来完成此项修改，在流水线中，为了尽量减少段间寄存器的数量，恢复了LUOp，将Lui生成的32位立即数在ID段就完成计算，与\verb"ID_EX_IMM"可共用一个寄存器，修改后电路与指导书上参考电路一致，具体可查看流水线数据通路
+		\item 为了完成中断与branch同时出现的问题，修改了control.v中PCSrc，具体参考后面的关键问题，其中有详细解释
+		\end{enumerate}
+
 		\subsubsection{段间寄存器}
 
 		\begin{enumerate}
@@ -74,9 +80,9 @@ frame=single,
 			该段用来保存指令的PC值和具体指令，故设置如下三个寄存器
 
 \begin{lstlisting}[language = verilog]
-reg [31:0] IF_ID_PC;
-reg [31:0] IF_ID_PC4;
-reg [31:0] IF_ID_ins;
+reg [31:0] IF_ID_PC;//保存当前PC，用作中断的返回值
+reg [31:0] IF_ID_PC4;//保存当前PC+4，用来作jal的写入值
+reg [31:0] IF_ID_ins;//用来保存当前指令，用作ID段译码
 \end{lstlisting}
 
 			\item \verb"ID_EX"段
@@ -84,18 +90,23 @@ reg [31:0] IF_ID_ins;
 			该段用来保存此条指令产生的各种控制信号、送入ALU的数据，以及其他部分信号，具体为
 
 \begin{lstlisting}[language = verilog]
-reg [31:0] ID_EX_CONBA;
-reg [31:0] ID_EX_DATA_1;
-reg [31:0] ID_EX_DATA_2;
-reg [31:0] ID_EX_PC4;
-reg [31:0] ID_EX_IMM;
-reg [4:0] ID_EX_Rt;
-reg [4:0] ID_EX_shamt;
-reg [2:0] ID_EX_PCSrc;
-reg [4:0] ID_EX_AddrC;
-reg [1:0] ID_EX_MemToReg;
-reg [5:0] ID_EX_ALUFun;
-reg ID_EX_RegWr,ID_EX_ALUSrc1,ID_EX_ALUsrc2,ID_EX_Sign,ID_EX_MemWr,ID_EX_MemRd;
+reg [31:0] ID_EX_CONBA;//保存当前指令的条件分支地址，用来作PC的条件分支跳转值
+reg [31:0] ID_EX_DATA_1;//保存当前指令第一个ALU的部分输入，用来EX段计算
+reg [31:0] ID_EX_DATA_2; //保存当前指令第二个ALU的部分输入，用来EX段计算
+reg [31:0] ID_EX_PC4; //保存当前PC+4，用来作jal的写入值并向后传递
+reg [31:0] ID_EX_IMM;//保存当前指令立即数，用来在EX段计算
+reg [4:0] ID_EX_Rt;//保存当前指令的Rt值，用来在EX段判断load_use
+reg [4:0] ID_EX_shamt;//保存当前指令的位移值，用来在EX段计算
+reg [2:0] ID_EX_PCSrc;//保存当前指令的PCSrc，用来向后传递
+reg [4:0] ID_EX_AddrC;//保存当前指令AddrC，用来说明当前指令写入哪个寄存器并向后传递
+reg [1:0] ID_EX_MemToReg;//保存当前指令的MemToReg，用来说明选择哪个信号作为寄存器的写入并向后传递
+reg [5:0] ID_EX_ALUFun;//保存当前指令的ALUFun，用来在EX段ALU的执行
+reg ID_EX_RegWr//保存当前指令的RegWr，用来说明当前指令是否写寄存器并向后传递
+reg ID_EX_ALUSrc1//保存当前指令的ALUSrc1，用来说明EX段的ALU选择哪个作为第一个输入
+reg ID_EX_ALUsrc2//保存当前指令的ALUSrc2，用来说明EX段的ALU选择哪个作为第二个输入
+reg ID_EX_Sign//保存当前指令的sign，用作EX段ALU的执行
+reg ID_EX_MemWr//保存的当前指令的MemWr，用来说明当前指令是否写RAM并向后传递
+reg ID_EX_MemRd//保存的当前指令的MemRd，用来说明当前指令是否读RAM并向后传递
 \end{lstlisting}
 
 			\item \verb"EX_MEM"段
@@ -103,12 +114,14 @@ reg ID_EX_RegWr,ID_EX_ALUSrc1,ID_EX_ALUsrc2,ID_EX_Sign,ID_EX_MemWr,ID_EX_MemRd;
 			该段主要保存ALU计算的结果及后续需要的控制信号，具体为			
 
 \begin{lstlisting}[language = verilog]
-reg [31:0] EX_MEM_PC4;
-reg [31:0] EX_MEM_ALUOUT;
-reg [31:0] EX_MEM_DATA2;
-reg [4:0] EX_MEM_AddrC;
-reg [1:0] EX_MEM_MemToReg;
-reg EX_MEM_RegWr,EX_MEM_MemWr,EX_MEM_MemRd;
+reg [31:0] EX_MEM_PC4;// 保存当前指令PC+4，用来作jal的写入值
+reg [31:0] EX_MEM_ALUOUT;//保存当前指令的ALU计算结果，用来判断branch以及作为当前指令的寄存器写入值
+reg [31:0] EX_MEM_DATA2;//用来保存当前指令的RAM的writedata
+reg [4:0] EX_MEM_AddrC;// 保存当前指令AddrC，用来说明当前指令写入哪个寄存器并向后传递
+reg [1:0] EX_MEM_MemToReg; //保存当前指令的MemToReg，用来说明选择哪个信号作为寄存器的写入并向后传递
+reg EX_MEM_RegWr保存当前指令的RegWr，用来说明当前指令是否写寄存器并向后传递
+reg EX_MEM_MemWr//保存的当前指令的MemWr，用来说明当前指令是否写RAM
+reg EX_MEM_MemRd;//保存的当前指令的MemRd，用来说明当前指令是否读RAM
 \end{lstlisting}
 
 			\item \verb"MEM_WB"段
@@ -116,9 +129,9 @@ reg EX_MEM_RegWr,EX_MEM_MemWr,EX_MEM_MemRd;
 			该段保存最后WB段需要的少数几个信号，具体为
 
 \begin{lstlisting}[language = verilog]
-reg [31:0] MEM_WB_DATAOUT;
-reg [4:0] MEM_WB_AddrC;
-reg MEM_WB_RegWr;
+reg [31:0] MEM_WB_DATAOUT;//用来保存最终写入寄存器的值
+reg [4:0] MEM_WB_AddrC;//用来保存最终写入寄存器编号
+reg MEM_WB_RegWr;//用来保存最终是否写入寄存器
 \end{lstlisting}
 			
 			\end{enumerate}
@@ -247,7 +260,7 @@ is_jump_r=(PCSrc==3'd3);
 
 因为中断返回地址为\verb"IF_ID_PC"，不进行+4，故在不发生中断的时候如果遇到jal指令写入\verb"IF_ID_PC"，则会导致死循环，故当指令为JAL时\verb"ID_EX_PC4"赋值为\verb"IF_ID_PC4"
 
-
+此外，现在回想一下当时的设计思路，原本\verb"ID_EX_PC4"应该直接赋值为\verb"IF_ID_PC4"，但是在后来修改的时候，为了解决中断的问题\verb"ID_EX_PC4"的含义发生了变化，现在来看应该为中断返回地址另外设计一个寄存器来保存，这样设计思路将更为清晰。
 \end{enumerate}
 
 
@@ -366,7 +379,7 @@ is_jump_r=(PCSrc==3'd3);
 	\section{仿真结果与分析}
 	\subsection{ALU仿真}
 	顺序执行ALU各项功能指令如表\ref{simtable1}，所得波形如下\ref{simpicture1}。
-	\begin{figure}[ht][ht]
+	\begin{figure}[ht]
 		\centering
 		\includegraphics[width = \textwidth]{ALUsim-1.eps}
 		\includegraphics[width = \textwidth]{ALUsim-2.eps}
@@ -505,7 +518,7 @@ jr $ra
 
 	使用实验用最大公约数代码，通过 testbench 模拟串口输入信号，观察中断和串口收发情况。
 
-	当计时器计时完成时，CPU 进入中断处理，最高位置为 1，原程序 PC 被存放在 26 号寄存器中。波形如6。
+	当计时器计时完成时，CPU 进入中断处理，最高位置为 1，原程序 PC 被存放在 26 号寄存器中。波形如\ref{simpicture6}。
 
 	\begin{figure}[ht]
 		\centering
@@ -680,4 +693,15 @@ j B
 	在团队中，我主要负责汇编器、汇编代码、外设相关代码和testbench的编写。
 
 	在实验中，最大的收获是理解了中断对于CPU的意义，以及CPU如何通过中断完成I/O操作。对于CPU将外设抽象为存储地址这一工程实践有了初步的认识。同时，通过测试CPU代码，了解了CPU开发中比较容易出错的地方。例如在流水线CPU中断设计中，最初中断始终不成功，在反复比对波形后，最终发现是存入寄存器的地址不对，进而发现此处应当根据执行的指令对存储地址进行判断。
+
+	此外，在基于github的团队开发方面也获益不少。
+
+	\subsection{白钦博}
+
+	总的来说这次流水线CPU的工作进展的较为顺利，我已开始负责完成一个基本能跑的流水线，在单周期的基础上，将工作分为添加段间寄存器，增加冒险探测电路及根据流水级数修改单周期的相应信号。在没有中断之前，遇到的bug不多，主要是一些信号忘记更改，以及转发电路的第三级转发的问题，更改这些问题后，我用了两个没有中断的简单汇编程序均测试成功，完成之后，将程序交给队友测试最终程序，发现关于中断出了一些问题，因为最终的汇编程序、外设及单周期中断的调试工作均由王敏虎同学负责，故将初步的调试工作交给了他。在完成跑通流水线后，我又根据王敏虎同学修改的基础上做了一些优化，减少了部分信号数量，删除了部分路径，增加了流水线CPU的主频。
+
+	这次实验是我少数参加合作开发的经历，让我对团队合作有了不少新的认识，在一个合理的分工下，两天跑通单周期，一天基本跑通流水线，我认为团队合作提高了我们不少的效率。除此之外，亲自完成流水线CPU的设计，也大大加深了我对理论课程的认识，尤其是画出一张完整的流水线数据通路之后，设计的思路就比较清晰了。在优化CPU主频的过程中，我第一次实际应用quratus查看关键路径，减小关键路径延迟的方法进行优化。
+	
+	总体来说，这次CPU大实验，对与我个人的实践水平有一个较大的帮助。
+
 \end{document}

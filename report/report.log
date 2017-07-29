@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99996 (TeX Live 2016/W32TeX) (preloaded format=xelatex 2017.4.7)  29 JUL 2017 10:16
+This is XeTeX, Version 3.14159265-2.6-0.99996 (TeX Live 2016/W32TeX) (preloaded format=xelatex 2017.4.7)  29 JUL 2017 13:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1688,7 +1688,7 @@ File: pipeline.png Graphic file (type QTm)
 . 
 . Could not resolve font FangSong/I (it probably doesn't exist).
 .................................................
-LaTeX Font Info:    Try loading font information for EU1+lmtt on input line 72.
+LaTeX Font Info:    Try loading font information for EU1+lmtt on input line 71.
 
  (c:/texlive/2016/texmf-dist/tex/latex/euenc/eu1lmtt.fd
 File: eu1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
@@ -1706,8 +1706,14 @@ File: eu1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 . <->"FangSong/OT:script=hani;language=DFLT;embolden=4;"
 . - 'bold small caps'  (bx/sc) with NFSS spec.: 
 .................................................
+LaTeX Font Info:    Font shape `EU1/SimSun(0)/m/sl' in size <10.53937> not avai
+lable
+(Font)              Font shape `EU1/SimSun(0)/m/it' tried instead on input line
+ 73.
 
-(c:/texlive/2016/texmf-dist/tex/latex/listings/lstlang1.sty
+[2
+
+] (c:/texlive/2016/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2015/06/04 1.6 listings language file
 )
 (c:/texlive/2016/texmf-dist/tex/latex/listings/lstlang2.sty
@@ -1715,35 +1721,30 @@ File: lstlang2.sty 2015/06/04 1.6 listings language file
 )
 (c:/texlive/2016/texmf-dist/tex/latex/listings/lstlang3.sty
 File: lstlang3.sty 2015/06/04 1.6 listings language file
-)
-LaTeX Font Info:    Font shape `EU1/SimSun(0)/m/sl' in size <10.53937> not avai
-lable
-(Font)              Font shape `EU1/SimSun(0)/m/it' tried instead on input line
- 82.
- [2
-
-] [3]
-Overfull \hbox (3.73813pt too wide) in paragraph at lines 172--173
+) [3] [4]
+Overfull \hbox (3.73813pt too wide) in paragraph at lines 185--186
 []\EU1/SimSun(0)/m/n/10.53937 即 \EU1/lmr/m/n/10.53937 EX \EU1/SimSun(0)/m/n/10.
 53937 段 指 令 需 要 读 \EU1/lmr/m/n/10.53937 RAM \EU1/SimSun(0)/m/n/10.53937 并 且 写 入
  的 寄 存 器 号 与 当 前 指 令 读 取 寄 存 器 号 相 同 时，| []\EU1/lmtt/m/n/10.53937 is_load_uses
  []
 
-[4] [5]
-Overfull \hbox (25.47144pt too wide) in paragraph at lines 237--240
+[5]
+Overfull \hbox (25.47144pt too wide) in paragraph at lines 250--253
 []\EU1/SimSun(0)/m/n/10.53937 为 了 防 止 在 中 断 结 束 之 后 进 入 错 误 的 地 址，|  故 增 设 寄 存 
 器[]\EU1/lmtt/m/n/10.53937 ID_EX_is_jump\EU1/lmr/m/n/10.53937 , []\EU1/lmtt/m/n/
 10.53937 ID_EX_JUMP_Addr
  []
 
+[6]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.53937> on input line 267.
+(Font)              <10.53937> on input line 280.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 267.
-[6] [7]
+(Font)              <7> on input line 280.
+ [7]
 Missing character: There is no ├ in font [lmmono10-regular]!
 Missing character: There is no ─ in font [lmmono10-regular]!
 Missing character: There is no │ in font [lmmono10-regular]!
+ [8]
 Missing character: There is no │ in font [lmmono10-regular]!
 Missing character: There is no │ in font [lmmono10-regular]!
 Missing character: There is no │ in font [lmmono10-regular]!
@@ -1794,7 +1795,6 @@ Missing character: There is no │ in font [lmmono10-regular]!
 Missing character: There is no │ in font [lmmono10-regular]!
 Missing character: There is no │ in font [lmmono10-regular]!
 Missing character: There is no │ in font [lmmono10-regular]!
- [8]
 Missing character: There is no │ in font [lmmono10-regular]!
 Missing character: There is no │ in font [lmmono10-regular]!
 Missing character: There is no │ in font [lmmono10-regular]!
@@ -1809,53 +1809,53 @@ Missing character: There is no ─ in font [lmmono10-regular]!
 File: ALUsim-1.eps Graphic file (type eps)
  <ALUsim-1.eps>
 File: ALUsim-2.eps Graphic file (type eps)
- <ALUsim-2.eps> [9] [10]
+ <ALUsim-2.eps> [9] [10] [11]
 File: OneCycleTestWave1.eps Graphic file (type eps)
- <OneCycleTestWave1.eps>
-File: OneCycleTestWave2.eps Graphic file (type eps)
 
-<OneCycleTestWave2.eps> [11
+<OneCycleTestWave1.eps>
+File: OneCycleTestWave2.eps Graphic file (type eps)
+ <OneCycleTestWave2.eps> [12
 
 ]
 File: OneCycleTestWave3.eps Graphic file (type eps)
- <OneCycleTestWave3.eps> [12]
+ <OneCycleTestWave3.eps>
+[13]
 File: OneCycleTestWave4.eps Graphic file (type eps)
-
-<OneCycleTestWave4.eps>
+ <OneCycleTestWave4.eps>
 File: OneCycleTestWave5.eps Graphic file (type eps)
  <OneCycleTestWave5.eps>
 File: OneCycleTestWave6.eps Graphic file (type eps)
  <OneCycleTestWave6.eps>
-[13]
+[14]
 File: PipelineTestWave1.eps Graphic file (type eps)
- <PipelineTestWave1.eps> [14]
+ <PipelineTestWave1.eps> [15]
 File: PipelineTestWave2.eps Graphic file (type eps)
- <PipelineTestWave2.eps> [15]
+ <PipelineTestWave2.eps> [16]
 File: PipelineTestWave3.eps Graphic file (type eps)
 
 <PipelineTestWave3.eps>
 File: PipelineTestWave4.eps Graphic file (type eps)
- <PipelineTestWave4.eps> [16]
+ <PipelineTestWave4.eps> [17]
 File: PipelineTestWave5.eps Graphic file (type eps)
  <PipelineTestWave5.eps>
 File: PipelineTestWave6.eps Graphic file (type eps)
 
-<PipelineTestWave6.eps> [17]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 683.
- [18] [19]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 683.
+<PipelineTestWave6.eps> [18] [19]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 707.
+ [20]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 707.
  (./report.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 683.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 683.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 683.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 707.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 707.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 707.
  ) 
 Here is how much of TeX's memory you used:
- 30015 strings out of 493591
- 561636 string characters out of 6146795
- 725525 words of memory out of 5000000
- 33043 multiletter control sequences out of 15000+600000
+ 30046 strings out of 493591
+ 562315 string characters out of 6146795
+ 853162 words of memory out of 5000000
+ 33074 multiletter control sequences out of 15000+600000
  29766 words of font info for 69 fonts, out of 8000000 for 9000
  1347 hyphenation exceptions out of 8191
- 65i,12n,78p,10434b,1716s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 65i,12n,78p,10434b,1849s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on report.pdf (19 pages).
+Output written on report.pdf (20 pages).
