@@ -2,9 +2,8 @@
 
 ## directory structure
 
-* `src`: support materials like expriment instuction 
-* `sim`: modelsim testbench files
-* `assemble`: MIPS32 assemble code for test
-* `OneCycle`: OneCycle MIPS32 implementation source code
-* `report`: expriment report 
+* `src`: source code, including MIPS implementation and compiler(MIPS assemble -> machine code)
+* `report`: Project report
+* `ref`: Reference Material
+* `config`: Optimization configuration of Quartus
 
